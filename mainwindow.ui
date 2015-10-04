@@ -38,10 +38,18 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QTableView" name="tableView"/>
+         <widget class="QTableView" name="tableView">
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
+         </widget>
         </item>
         <item>
-         <widget class="QTableView" name="tableViewFemale"/>
+         <widget class="QTableView" name="tableViewFemale">
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

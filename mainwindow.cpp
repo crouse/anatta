@@ -174,3 +174,13 @@ void MainWindow::on_actionRefresh_triggered()
     modelFemale->select();
     ui->tableViewFemale->reset();
 }
+
+void MainWindow::on_tableView_customContextMenuRequested(const QPoint &pos) // male
+{
+    qDebug() << pos;
+}
+
+void MainWindow::on_tableViewFemale_customContextMenuRequested(const QPoint &pos) // female
+{
+    qDebug() << pos;
+}

@@ -46,6 +46,10 @@ private slots:
     void on_actionDb_triggered();
     void on_actionRefresh_triggered();
 
+    void on_tableView_customContextMenuRequested(const QPoint &pos);
+
+    void on_tableViewFemale_customContextMenuRequested(const QPoint &pos);
+
 private:
     Ui::MainWindow *ui;
     QString serverIp;
