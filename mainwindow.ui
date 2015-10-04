@@ -53,6 +53,11 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>统计</string>
+       </attribute>
+      </widget>
       <widget class="QWidget" name="tabConfig">
        <attribute name="title">
         <string>设置</string>
