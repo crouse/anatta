@@ -81,7 +81,8 @@
      <string>Tool</string>
     </property>
     <addaction name="actionSetting"/>
-    <addaction name="actionExport"/>
+    <addaction name="actionExportPdf"/>
+    <addaction name="action"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="tearOffEnabled">
@@ -120,9 +121,9 @@
     <string>设置</string>
    </property>
   </action>
-  <action name="actionExport">
+  <action name="actionExportPdf">
    <property name="text">
-    <string>导出</string>
+    <string>导出PDF</string>
    </property>
   </action>
   <action name="actionDb">
@@ -141,6 +142,24 @@
    </property>
    <property name="text">
     <string>refresh</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>导出数据库文件</string>
+   </property>
+   <property name="toolTip">
+    <string>exportSql</string>
+   </property>
+  </action>
+  <action name="actionExportPersonalInfo">
+   <property name="text">
+    <string>导出个人信息</string>
+   </property>
+  </action>
+  <action name="actionPrintPersonnelCredentials">
+   <property name="text">
+    <string>导出个人皈依证</string>
    </property>
   </action>
  </widget>

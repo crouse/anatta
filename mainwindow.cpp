@@ -177,10 +177,34 @@ void MainWindow::on_actionRefresh_triggered()
 
 void MainWindow::on_tableView_customContextMenuRequested(const QPoint &pos) // male
 {
-    qDebug() << pos;
+    int rowNum = ui->tableView->verticalHeader()->logicalIndexAt(pos);
+    int colNum = ui->tableView->horizontalHeader()->logicalIndexAt(pos);
+
+    int db_id = model->index(rowNum, 0).data().toInt();
+    QString receipt = model->index(rowNum, 1).data().toString();
+    QString sth = model->index(rowNum, colNum).data().toString();
+    qDebug() << db_id << receipt;
+    qDebug() << sth;
+
+    QMenu *popMenu = new QMenu(this);
+    popMenu->addAction(ui->actionExportPersonalInfo);
+    popMenu->addAction(ui->actionPrintPersonnelCredentials);
+    popMenu->exec(QCursor::pos());
+
+    delete popMenu;
 }
 
 void MainWindow::on_tableViewFemale_customContextMenuRequested(const QPoint &pos) // female
 {
     qDebug() << pos;
+}
+
+void MainWindow::on_actionExportPersonalInfo_triggered()
+{
+    // export excel format personnel info
+}
+
+void MainWindow::on_actionPrintPersonnelCredentials_triggered()
+{
+    // export pdf format personnel info
 }

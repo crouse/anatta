@@ -9,13 +9,11 @@
 #include <QtSql>
 #include <QTcpSocket>
 #include <QMessageBox>
-#include <QStandardItemModel>
+//#include <QStandardItemModel>
 #include <QSqlDatabase>
-#include <QSqlQueryModel>
 #include <QTableView>
-#include <QSqlRelationalDelegate>
-#include <QSqlRelationalTableModel>
 #include <QSqlTableModel>
+#include <QPdfWriter>
 
 #define DB_NAME "citta"
 #define DB_PASS "123456"
@@ -49,6 +47,10 @@ private slots:
     void on_tableView_customContextMenuRequested(const QPoint &pos);
 
     void on_tableViewFemale_customContextMenuRequested(const QPoint &pos);
+
+    void on_actionExportPersonalInfo_triggered();
+
+    void on_actionPrintPersonnelCredentials_triggered();
 
 private:
     Ui::MainWindow *ui;
