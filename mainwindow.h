@@ -9,11 +9,16 @@
 #include <QtSql>
 #include <QTcpSocket>
 #include <QMessageBox>
-//#include <QStandardItemModel>
 #include <QSqlDatabase>
 #include <QTableView>
 #include <QSqlTableModel>
 #include <QPdfWriter>
+#include <QPainter>
+#include <QFileDialog>
+#include <QFile>
+#include <QFont>
+#include <QPixmap>
+#include <QPen>
 
 #define DB_NAME "citta"
 #define DB_PASS "123456"
@@ -33,6 +38,8 @@ public:
     bool databaseTest();
     bool connectDatabase();
     void setModel(QSqlTableModel *mod, QString tableName, QTableView *view);
+    void savePdfs(QString fileName, QSqlTableModel *mod, QString filter);
+    void savePdfFilesAll(QString fileName);
     QLineEdit *lineEditSearch;
     QLineEdit *lineEditConfig;
     QLineEdit *lineEditEditor;
@@ -51,6 +58,8 @@ private slots:
     void on_actionExportPersonalInfo_triggered();
 
     void on_actionPrintPersonnelCredentials_triggered();
+
+    void on_actionExportPdf_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -196,7 +196,21 @@ void MainWindow::on_tableView_customContextMenuRequested(const QPoint &pos) // m
 
 void MainWindow::on_tableViewFemale_customContextMenuRequested(const QPoint &pos) // female
 {
-    qDebug() << pos;
+    int rowNum = ui->tableViewFemale->verticalHeader()->logicalIndexAt(pos);
+    int colNum = ui->tableViewFemale->horizontalHeader()->logicalIndexAt(pos);
+
+    int db_id = modelFemale->index(rowNum, 0).data().toInt();
+    QString receipt = modelFemale->index(rowNum, 1).data().toString();
+    QString sth = modelFemale->index(rowNum, colNum).data().toString();
+    qDebug() << db_id << receipt;
+    qDebug() << sth;
+
+    QMenu *popMenu = new QMenu(this);
+    popMenu->addAction(ui->actionExportPersonalInfo);
+    popMenu->addAction(ui->actionPrintPersonnelCredentials);
+    popMenu->exec(QCursor::pos());
+
+    delete popMenu;
 }
 
 void MainWindow::on_actionExportPersonalInfo_triggered()
@@ -207,4 +221,36 @@ void MainWindow::on_actionExportPersonalInfo_triggered()
 void MainWindow::on_actionPrintPersonnelCredentials_triggered()
 {
     // export pdf format personnel info
+}
+
+void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter)
+{
+    qDebug() << fileName;
+    qDebug() << mod;
+    qDebug() << filter;
+    //mod->setFilter(filter);
+    mod->select();
+    for (int i = 0; i < mod->rowCount(); ++i) {
+        QSqlRecord record = mod->record(i);
+        for(int j = 1; j < 16; ++j) {
+            qDebug() << record.fieldName(j) << record.value(record.fieldName(j)).toString();
+        }
+        qDebug() << "=============================\n";
+    }
+}
+
+void MainWindow::savePdfFilesAll(QString fileName)
+{
+    qDebug() << fileName;
+    savePdfs(fileName, model, "");
+}
+
+void MainWindow::on_actionExportPdf_triggered()
+{
+    // export all pdf
+    // [tbd] test if database is connected, if not QmessageBox info, return
+    QString fileName;
+    fileName = QFileDialog::getSaveFileName(this, "打开保存文件路径", "", "pdf (*.pdf)");
+    if (fileName.isNull()) return;
+    savePdfFilesAll(fileName);
 }
