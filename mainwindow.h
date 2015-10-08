@@ -19,7 +19,7 @@
 #include <QFont>
 #include <QPixmap>
 #include <QPen>
-
+#include <QDate>
 #define DB_NAME "citta"
 #define DB_PASS "123456"
 #define DB_USER "citta"
@@ -38,7 +38,7 @@ public:
     bool databaseTest();
     bool connectDatabase();
     void setModel(QSqlTableModel *mod, QString tableName, QTableView *view);
-    void savePdfs(QString fileName, QSqlTableModel *mod, QString filter);
+    void savePdfs(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
     void savePdfFilesAll(QString fileName);
     QLineEdit *lineEditSearch;
     QLineEdit *lineEditConfig;

@@ -223,26 +223,147 @@ void MainWindow::on_actionPrintPersonnelCredentials_triggered()
     // export pdf format personnel info
 }
 
-void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter)
+void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath)
 {
-    qDebug() << fileName;
-    qDebug() << mod;
+#ifndef ONE_PAGE_NUM
+#define ONE_PAGE_NUM 8
+#endif
+
+    int pageNum = 0;
+    int leftMargin;
+    int leftWordMargin;
+    int pixMapMagin;
+    int topMargin = 400;
+    int blockHeight = 1600;
+
+    int headerPos = 0;
+    int footer = 0;
+
+    QString dt = QDate::currentDate().toString(Qt::ISODate);
+
+    QFile pdf_file(fileName);
+    pdf_file.open(QIODevice::WriteOnly);
+    QPdfWriter *pdf_writer = new QPdfWriter(&pdf_file);
+    QPainter *pdf_painter = new QPainter(pdf_writer);
+    QFont font;
+    font.setFamily("微软雅黑");
+    font.setPixelSize(150);
+
+    QFont mfont;
+    mfont.setPixelSize(120);
+    mfont.setFamily("苹果方");
+    pdf_painter->setFont(mfont);
+    QPen vpen;
+    vpen.setStyle(Qt::DashDotDotLine);
+    pdf_painter->setPen(vpen);
+    pdf_writer->setPageSize(QPagedPaintDevice::A4);
+
     qDebug() << filter;
     //mod->setFilter(filter);
     mod->select();
-    for (int i = 0; i < mod->rowCount(); ++i) {
-        QSqlRecord record = mod->record(i);
-        for(int j = 1; j < 16; ++j) {
-            qDebug() << record.fieldName(j) << record.value(record.fieldName(j)).toString();
+
+    for (int i = 0; i < mod->rowCount(); i += 8) {
+        /* handle page margin */
+        if (pageNum % 2 == 0) {
+            pixMapMagin = 800;
+            leftMargin = 1800;
+            leftWordMargin = leftMargin + 1100;
+            headerPos = 7500;
+            footer = 1500;
+
+        } else {
+            pixMapMagin = 400;
+            leftMargin = 1400;
+            leftWordMargin = leftMargin + 1100;
+            headerPos = 1500;
+            footer = 4500;
         }
-        qDebug() << "=============================\n";
+
+        QSqlRecord record[ONE_PAGE_NUM];
+
+        pdf_painter->drawLine(QPoint(pixMapMagin, 300), QPoint(9000, 300));
+        for(int m = 0; m < 8; ++m) {
+            record[m] = mod->record(i + m);
+            /* make one page pdf */
+            /* set image */
+
+            /* If receipt is empty which means there is no page any more, so end this func */
+            QString receipt = record[m].value("receipt").toString();
+            if (receipt.isEmpty()) {
+                qDebug() << "Receipt is empty" << "Page Num is " << pageNum;
+                pdf_painter->end();
+                delete pdf_painter;
+                delete pdf_writer;
+                pdf_file.close();
+                return;
+            }
+
+            pdf_painter->setFont(mfont);
+            pdf_painter->drawText(QRect(headerPos, 140, 20000, 300), QString("%1-%2").arg(i+1).arg(i+7));
+            pdf_painter->drawText(QRect(footer, 13400, 20000, 300),
+                                  QString("为保护信众信息，请注意信息安全，%1，第 %2 页").arg(dt).arg(pageNum + 1));
+
+            pdf_painter->setFont(font);
+
+            QString pixmapAbsPath = QString("%1/%2.jpg").arg(pixmapPath).arg(receipt);
+            qDebug() << pixmapAbsPath;
+            //QPixmap pixmap(pixmapAbsPath);
+            QPixmap pixmap("/Users/quqinglei/Desktop/myself.jpg"); // [tbd just test]
+
+            int height = m * blockHeight;
+
+            pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 885, 1239, pixmap);
+            QString name = QString("姓名：%1").arg(record[m].value("name").toString());
+            QString gender = QString("性别：%1").arg(record[m].value("gender").toString());
+            QString fname = QString("法名：%1").arg(record[m].value("fname").toString());
+            QString race = QString("民族：%1").arg(record[m].value("race").toString());
+            QString birthday = QString("生日：%1").arg(record[m].value("birthday").toString());
+            QString degree = QString("学历：%1").arg(record[m].value("degree").toString());
+            QString addr = QString("住址：%1 %2 %3")
+                    .arg(record[m].value("province").toString())
+                    .arg(record[m].value("city").toString())
+                    .arg(record[m].value("district").toString());
+            QString job = QString("工作：%1").arg(record[m].value("job").toString());
+            QString level_time = QString("时间/程度：%1/%2")
+                    .arg(record[m].value("years2start_learning_buddhism").toString())
+                    .arg(record[m].value("deep_understanding_of_dharma").toString());
+
+            QString code = QString("编号：%1").arg(record[m].value("code").toString());
+            QString phone = QString("手机：%1").arg(record[m].value("phone_num").toString());
+            QString pid = QString("身份证：%1").arg(record[m].value("personnel_id").toString());
+
+            pdf_painter->drawText(QRect(leftMargin, topMargin + height, 10000, 300), name);
+            pdf_painter->drawText(QRect(leftMargin + 2500, topMargin + height, 20000, 300), fname);
+            pdf_painter->drawText(QRect(leftMargin + 5000, topMargin + height, 20000, 300), gender);
+
+            pdf_painter->drawText(QRect(leftMargin, topMargin + height + 300, 20000, 300), race);
+            pdf_painter->drawText(QRect(leftMargin + 2500, topMargin + height + 300, 20000, 300), birthday);
+            pdf_painter->drawText(QRect(leftMargin + 5000, topMargin + height + 300, 20000, 300), degree);
+
+            pdf_painter->drawText(QRect(leftMargin, topMargin + height + 600, 20000, 300), addr);
+            pdf_painter->drawText(QRect(leftMargin + 2500, topMargin + height + 600, 20000, 300), job);
+            pdf_painter->drawText(QRect(leftMargin + 5000, topMargin + height + 600, 20000, 300), level_time);
+
+            pdf_painter->drawText(QRect(leftMargin, topMargin + height + 900, 20000, 300), code);
+            pdf_painter->drawText(QRect(leftMargin + 2500, topMargin + height + 900, 20000, 300), phone);
+            pdf_painter->drawText(QRect(leftMargin + 5000, topMargin + height + 900, 20000, 300), pid);
+
+            pdf_painter->drawLine(QPoint(pixMapMagin, 1900 + height), QPoint(9000, 1900 + height));
+        }
+
+        pdf_writer->newPage();
+        ++pageNum;
+        qDebug() << "Page num: " << pageNum;
     }
+
+    delete pdf_writer;
+    pdf_file.close();
 }
 
 void MainWindow::savePdfFilesAll(QString fileName)
 {
     qDebug() << fileName;
-    savePdfs(fileName, model, "");
+    savePdfs(fileName, model, "", "/Users/quqinglei/Destkop/");
 }
 
 void MainWindow::on_actionExportPdf_triggered()
