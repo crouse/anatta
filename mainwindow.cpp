@@ -101,7 +101,7 @@ void MainWindow::setModel(QSqlTableModel *mod, QString tableName, QTableView *vi
     mod->setHeaderData(7, Qt::Horizontal, "生日");
     mod->setHeaderData(8, Qt::Horizontal, "学历");
     mod->setHeaderData(9, Qt::Horizontal, "现居省");
-    mod->setHeaderData(10, Qt::Horizontal, "先居市");
+    mod->setHeaderData(10, Qt::Horizontal, "现居市");
     mod->setHeaderData(11, Qt::Horizontal, "现居区县");
     mod->setHeaderData(12, Qt::Horizontal, "详细街道地址");
     mod->setHeaderData(13, Qt::Horizontal, "皈依证号");
@@ -129,7 +129,7 @@ void MainWindow::setModel(QSqlTableModel *mod, QString tableName, QTableView *vi
     mod->setHeaderData(35, Qt::Horizontal, "认为易学的经典");
     mod->setHeaderData(36, Qt::Horizontal, "认为难读懂的经典");
     mod->setHeaderData(37, Qt::Horizontal, "格言");
-    mod->setHeaderData(38, Qt::Horizontal, "家庭三宝地址");
+    mod->setHeaderData(38, Qt::Horizontal, "家庭三宝弟子");
     mod->setHeaderData(39, Qt::Horizontal, "编辑人姓名");
     mod->setHeaderData(40, Qt::Horizontal, "修改人姓名");
     mod->setHeaderData(41, Qt::Horizontal, "学佛小组种类");
@@ -356,7 +356,9 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
         qDebug() << "Page num: " << pageNum;
     }
 
+    pdf_painter->end();
     delete pdf_writer;
+    delete pdf_painter;
     pdf_file.close();
 }
 
