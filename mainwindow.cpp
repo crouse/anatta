@@ -228,6 +228,10 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
 #ifndef ONE_PAGE_NUM
 #define ONE_PAGE_NUM 8
 #endif
+    if (!mod) {
+        QMessageBox::information(this, "warn", "数据库未连接或者没有导出的数据");
+        return;
+    }
 
     int pageNum = 0;
     int leftMargin;
@@ -247,15 +251,18 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
     QPainter *pdf_painter = new QPainter(pdf_writer);
     QFont font;
     font.setFamily("微软雅黑");
-    font.setPixelSize(150);
+    //font.setPixelSize(150);
+    font.setPointSize(8);
 
     QFont mfont;
-    mfont.setPixelSize(120);
+    //mfont.setPixelSize(120);
+    mfont.setPointSize(6);
     mfont.setFamily("苹果方");
-    pdf_painter->setFont(mfont);
     QPen vpen;
-    vpen.setStyle(Qt::DashDotDotLine);
+    vpen.setStyle(Qt::DashLine);
     pdf_painter->setPen(vpen);
+    pdf_painter->setFont(mfont);
+    pdf_painter->setRenderHint(QPainter::NonCosmeticDefaultPen, true);
     pdf_writer->setPageSize(QPagedPaintDevice::A4);
 
     qDebug() << filter;
@@ -268,19 +275,19 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
             pixMapMagin = 800;
             leftMargin = 1800;
             leftWordMargin = leftMargin + 1100;
-            headerPos = 7500;
-            footer = 1500;
-
+            footer = 8500;
         } else {
             pixMapMagin = 400;
             leftMargin = 1400;
             leftWordMargin = leftMargin + 1100;
-            headerPos = 1500;
-            footer = 4500;
+            footer = 1500;
         }
+
+        headerPos = 7500;
 
         QSqlRecord record[ONE_PAGE_NUM];
 
+        pdf_painter->drawText(QRect(footer, 13400, 600, 300), QString("%2").arg(pageNum + 1));
         pdf_painter->drawLine(QPoint(pixMapMagin, 300), QPoint(9000, 300));
         for(int m = 0; m < 8; ++m) {
             record[m] = mod->record(i + m);
@@ -298,13 +305,6 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
                 return;
             }
 
-            pdf_painter->setFont(mfont);
-            pdf_painter->drawText(QRect(headerPos, 140, 20000, 300), QString("%1-%2").arg(i+1).arg(i+7));
-            pdf_painter->drawText(QRect(footer, 13400, 20000, 300),
-                                  QString("为保护信众信息，请注意信息安全，%1，第 %2 页").arg(dt).arg(pageNum + 1));
-
-            pdf_painter->setFont(font);
-
             QString pixmapAbsPath = QString("%1/%2.jpg").arg(pixmapPath).arg(receipt);
             qDebug() << pixmapAbsPath;
             //QPixmap pixmap(pixmapAbsPath);
@@ -313,6 +313,8 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
             int height = m * blockHeight;
 
             pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 885, 1239, pixmap);
+
+            pdf_painter->setFont(font);
             QString name = QString("姓名：%1").arg(record[m].value("name").toString());
             QString gender = QString("性别：%1").arg(record[m].value("gender").toString());
             QString fname = QString("法名：%1").arg(record[m].value("fname").toString());
@@ -324,8 +326,8 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
                     .arg(record[m].value("city").toString())
                     .arg(record[m].value("district").toString());
             QString job = QString("工作：%1").arg(record[m].value("job").toString());
-            QString level_time = QString("时间/程度：%1/%2")
-                    .arg(record[m].value("years2start_learning_buddhism").toString())
+            QString level_time = QString("学佛时间/程度：%1/%2")
+                    .arg(record[m].value("year2start_learning_buddhism").toString())
                     .arg(record[m].value("deep_understanding_of_dharma").toString());
 
             QString code = QString("编号：%1").arg(record[m].value("code").toString());
@@ -349,6 +351,8 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
             pdf_painter->drawText(QRect(leftMargin + 5000, topMargin + height + 900, 20000, 300), pid);
 
             pdf_painter->drawLine(QPoint(pixMapMagin, 1900 + height), QPoint(9000, 1900 + height));
+
+
         }
 
         pdf_writer->newPage();
@@ -366,6 +370,7 @@ void MainWindow::savePdfFilesAll(QString fileName)
 {
     qDebug() << fileName;
     savePdfs(fileName, model, "", "/Users/quqinglei/Destkop/");
+    savePdfs(fileName, modelFemale, "", "/Users/quqinglei/Destkop/");
 }
 
 void MainWindow::on_actionExportPdf_triggered()
