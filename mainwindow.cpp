@@ -223,6 +223,25 @@ void MainWindow::on_actionPrintPersonnelCredentials_triggered()
     // export pdf format personnel info
 }
 
+void MainWindow::createCard(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath)
+{
+    if (!mod) return;
+    QFile pdfFile(fileName);
+    pdfFile.open(QIODevice::WriteOnly);
+    QPdfWriter *pdfWriter = new QPdfWriter(&pdfFile);
+    pdfWriter->setPageSize(QPagedPaintDevice::A4);
+    QPainter *pdfPainter = new QPainter(pdfWriter);
+    QFont font;
+    font.setFamily("华文楷体");
+    font.setPointSize(8);
+    pdfPainter->drawRect(0, 0, 9600, 13700);
+    pdfPainter->end();
+    pdfFile.close();
+
+    delete pdfPainter;
+    delete pdfWriter;
+}
+
 void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath)
 {
 #ifndef ONE_PAGE_NUM
@@ -357,20 +376,12 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
 
         pdf_writer->newPage();
         ++pageNum;
-        qDebug() << "Page num: " << pageNum;
     }
 
     pdf_painter->end();
     delete pdf_writer;
     delete pdf_painter;
     pdf_file.close();
-}
-
-void MainWindow::savePdfFilesAll(QString fileName)
-{
-    qDebug() << fileName;
-    savePdfs(fileName, model, "", "/Users/quqinglei/Destkop/");
-    savePdfs(fileName, modelFemale, "", "/Users/quqinglei/Destkop/");
 }
 
 void MainWindow::on_actionExportPdf_triggered()
@@ -380,5 +391,31 @@ void MainWindow::on_actionExportPdf_triggered()
     QString fileName;
     fileName = QFileDialog::getSaveFileName(this, "打开保存文件路径", "", "pdf (*.pdf)");
     if (fileName.isNull()) return;
-    savePdfFilesAll(fileName);
+    savePdfs(fileName, model, "", "/Users/quqinglei/Destkop/");
+    savePdfs(fileName, modelFemale, "", "/Users/quqinglei/Destkop/");
+}
+
+void MainWindow::on_toolButtonImagePath_clicked()
+{
+    QString dir = QFileDialog::getExistingDirectory(this,
+                                                    tr("打开路径"),
+                                                    "~/Desktop/images",
+                                                    QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks
+                                                    );
+    ui->lineEditImagePath->setText(dir);
+}
+
+void MainWindow::on_toolButtonBackPath_clicked()
+{
+     QString dir = QFileDialog::getExistingDirectory(this,
+                                                    tr("打开路径"),
+                                                    "~/Desktop/backup",
+                                                    QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks
+                                                    );
+    ui->lineEditBackPath->setText(dir);
+}
+
+void MainWindow::on_actionCard_triggered()
+{
+    createCard("/tmp/hello.pdf", model, "", "");
 }

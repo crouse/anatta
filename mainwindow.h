@@ -39,7 +39,8 @@ public:
     bool connectDatabase();
     void setModel(QSqlTableModel *mod, QString tableName, QTableView *view);
     void savePdfs(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
-    void savePdfFilesAll(QString fileName);
+    void createCard(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
+
     QLineEdit *lineEditSearch;
     QLineEdit *lineEditConfig;
     QLineEdit *lineEditEditor;
@@ -60,6 +61,12 @@ private slots:
     void on_actionPrintPersonnelCredentials_triggered();
 
     void on_actionExportPdf_triggered();
+
+    void on_toolButtonImagePath_clicked();
+
+    void on_toolButtonBackPath_clicked();
+
+    void on_actionCard_triggered();
 
 private:
     Ui::MainWindow *ui;
