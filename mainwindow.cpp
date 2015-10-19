@@ -223,18 +223,218 @@ void MainWindow::on_actionPrintPersonnelCredentials_triggered()
     // export pdf format personnel info
 }
 
+void MainWindow::createCert(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath)
+{
+    QFile pdfFile(fileName);
+    pdfFile.open(QIODevice::WriteOnly);
+
+    QPdfWriter *pdfWriter = new QPdfWriter(&pdfFile);
+    pdfWriter->setPageMargins(QMarginsF(0, 0, 0, 0));
+    pdfWriter->setPageSize(QPagedPaintDevice::A4);
+    pdfWriter->setPageOrientation(QPageLayout::Landscape);
+
+    QPainter *pdfPainter = new QPainter(pdfWriter);
+
+    //pdfPainter->setPen(Qt::blue);
+    //pdfPainter->drawRect(0, 0, 9600, 13700);
+
+    int middle = 4800;
+    int width = 9600;
+    int height = 13700;
+
+    float margin = 268.6274;
+    float mheight = 3022.0588;
+    float mwidth = 4531.38;
+    float oneCm = 671.5686;
+    float cellHeight = 352.3641;
+    float label = mheight / 3.0 * 2;
+
+    QRectF *rec[8];
+
+    for(int j = 0; j < 2; j++) {
+        for(int i = 0; i < 4; i++) {
+            int m;
+            j == 0? m = i: m = i+4;
+            qDebug() << m << j;
+            rec[m] = new QRectF;
+            rec[m]->setRect((4800 + margin) * j, mheight * i + margin * i * 2, mwidth, mheight);
+        }
+    }
+
+    for(int i = 0; i < 8; i++) {
+        qDebug() << rec[i]->width() << rec[i]->height() << rec[i]->x() << rec[i]->y();
+        pdfPainter->drawRect(rec[i]->x(), rec[i]->y(), rec[i]->width(), rec[i]->height());
+        int x = rec[i]->x() + 1.5 * oneCm;
+        pdfPainter->drawLine(x, rec[i]->y(), x, rec[i]->y() + rec[i]->height());
+
+        for(int j = 0; j < 9; j++) {
+            //pdfPainter->drawText(QPointF(x + (j + 1) * cellHeight, rec[i]->y()), QString("*"));
+            QPointF p1(x + (j+1) * cellHeight, rec[i]->y());
+            QPointF p2(x + (j+1) * cellHeight, rec[i]->y() + rec[i]->height());
+            pdfPainter->drawText(QPointF(x + (j + 1) * cellHeight, rec[i]->y()), QString("*"));
+            pdfPainter->drawLine(p1, p2);
+        }
+
+        QPoint pa(rec[i]->x(), rec[i]->y() + label);
+        QPoint pb(rec[i]->x() + rec[i]->width(), rec[i]->y() + label);
+        pdfPainter->drawLine(pa, pb);
+    }
+
+    pdfPainter->end();
+    pdfFile.close();
+
+    delete pdfPainter;
+    delete pdfWriter;
+}
+
 void MainWindow::createCard(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath)
 {
+    qDebug() << pixmapPath << filter;
     if (!mod) return;
     QFile pdfFile(fileName);
     pdfFile.open(QIODevice::WriteOnly);
     QPdfWriter *pdfWriter = new QPdfWriter(&pdfFile);
+    pdfWriter->setCreator("quqinglei");
+    pdfWriter->setPageMargins(QMarginsF(0, 0, 0, 0));
     pdfWriter->setPageSize(QPagedPaintDevice::A4);
     QPainter *pdfPainter = new QPainter(pdfWriter);
+
     QFont font;
     font.setFamily("华文楷体");
-    font.setPointSize(8);
-    pdfPainter->drawRect(0, 0, 9600, 13700);
+    font.setPointSize(10);
+    pdfPainter->setFont(font);
+    pdfPainter->setPen(Qt::red);
+    pdfPainter->drawRect(0, 0, 9600, 13700); // 大矩形
+    pdfPainter->drawLine(4191, 0, 4191, 13600);
+    pdfPainter->drawLine(4800, 0, 4800, 13600);
+    pdfPainter->drawLine(8991, 0, 8991, 13600);
+    pdfPainter->drawLine(0, 5858, 9600, 5858);
+    pdfPainter->drawLine(0, 6363, 9600, 6363);
+    pdfPainter->drawLine(0, 12221, 9600, 12221);
+    // 内框
+    pdfPainter->setPen(Qt::black);
+    pdfPainter->drawLine(QPointF(0, 252.5), QPointF(9600, 252.5));
+    pdfPainter->drawLine(QPointF(252.5, 0), QPointF(252.5, 13600));
+    pdfPainter->drawLine(QPointF(8738.5, 0), QPointF(8738.5, 13600));
+    pdfPainter->drawLine(QPointF(0, 11968.5), QPointF(9600, 11968.5));
+    pdfPainter->drawLine(QPointF(0, 5605.5), QPointF(9600, 5605.5));
+    pdfPainter->drawLine(QPointF(3938, 0), QPointF(3938, 13600));
+    pdfPainter->drawLine(QPointF(5052.5, 0), QPointF(5052.5, 13600));
+    pdfPainter->drawLine(QPointF(0, 6615.5), QPointF(9600, 6615.5));
+    pdfPainter->drawLine(QPointF(252.5, 1262.5), QPointF(8738.5, 1262.5));
+    pdfPainter->drawLine(QPointF(252.5, 7625.5), QPointF(8738.5, 7625.5));
+    pdfPainter->drawLine(QPointF(252.5, 1696.8), QPointF(8738.5, 1696.5));
+    pdfPainter->drawLine(QPointF(252.5, 8059.8), QPointF(8738.5, 8059.8));
+    pdfPainter->drawLine(QPointF(2697.2, 1696.5), QPointF(2697.2, 3433.7));
+    pdfPainter->drawLine(QPointF(252.5, 3433.7), QPointF(3938, 3433.7));
+    pdfPainter->drawLine(QPointF(252.5, 2130.8), QPointF(2697.2, 2130.8));
+    pdfPainter->drawLine(QPointF(252.5, 2565.1), QPointF(2697.2, 2565.1));
+    pdfPainter->drawLine(QPointF(252.5, 2999.4), QPointF(2697.2, 2999.4));
+    pdfPainter->drawLine(QPointF(252.5, 3433.7), QPointF(2697.2, 3433.7));
+    pdfPainter->drawLine(QPointF(252.5, 3868), QPointF(8738.5, 3868));
+    pdfPainter->drawLine(QPointF(252.5, 4302.3), QPointF(8738.5, 4302.3));
+    pdfPainter->drawLine(QPointF(252.5, 4736.6), QPointF(8738.5, 4736.6));
+    pdfPainter->drawLine(QPointF(252.5, 5170.9), QPointF(8738.5, 5170.9));
+    pdfPainter->drawLine(QPointF(252.5, 3868), QPointF(8738.5, 3868));
+    pdfPainter->drawLine(QPointF(1252.5, 1696.5), QPointF(1252.5, 5605.5));
+
+    // mark
+    {
+        pdfPainter->setPen(Qt::blue);
+        pdfPainter->drawText(QPointF(252.5, 252.5), "(252.5, 252.5)");
+        pdfPainter->drawText(QPointF(252.5, 6615.5), "(252.5, 6615.5)");
+        pdfPainter->drawText(QPointF(3938, 6615.5), "(3938, 6615.5)");
+        pdfPainter->drawText(QPointF(5052.5, 6615.5), "(5052.5, 6615.5)");
+        pdfPainter->drawText(QPointF(8738.5, 6615.5), "(8738.5, 6615.5)");
+        pdfPainter->drawText(QPointF(3938, 252.5), "(3938, 252.5)");
+        pdfPainter->drawText(QPointF(5052.5, 252.5), "(5052.5, 252.5)");
+        pdfPainter->drawText(QPointF(252.5, 5605.5), "(252.5, 5605.5)");
+        pdfPainter->drawText(QPointF(3938, 5605), "(3938, 5605)");
+        pdfPainter->drawText(QPointF(5052.5, 5605), "(5052.5, 5605)");
+        pdfPainter->drawText(QPointF(8738.5, 5605), "(8738.5, 5605)");
+        pdfPainter->drawText(QPointF(8738.5, 252.5), "(8738.5, 252.5)");
+        pdfPainter->drawText(QPointF(252.5, 11968.5), "(252.5, 11968.5)");
+        pdfPainter->drawText(QPointF(3938, 11968.5), "(3938, 11968.5)");
+        pdfPainter->drawText(QPointF(5052.5, 11968.5), "(5052.5, 11968.5)");
+        pdfPainter->drawText(QPointF(8738.5, 11968.5), "(8738.5, 11968.5)");
+        pdfPainter->drawText(QPointF(252.5, 1262.5), "(252.5, 1262.5)");
+        pdfPainter->drawText(QPointF(3938, 1262.5), "(3938, 1262.5)");
+        pdfPainter->drawText(QPointF(5052.5, 1262.5), "(5052.5, 1262.5)");
+        pdfPainter->drawText(QPointF(8738.5, 1262.5), "(8738.5, 1262.5)");
+        pdfPainter->drawText(QPointF(252.5, 7625.5), "(252.5, 7625.5)");
+        pdfPainter->drawText(QPointF(3938, 7625.5), "(3938, 7625.5)");
+        pdfPainter->drawText(QPointF(8738.5, 7625.5), "(8738.5, 7625.5)");
+        pdfPainter->drawText(QPointF(252.5, 1696.5), "(252.5, 1696.5)");
+        pdfPainter->drawText(QPointF(3938, 1696.5), "(3938, 1696.5)");
+        pdfPainter->drawText(QPointF(5052.5, 1696.5), "(5052.5, 1696.5)");
+        pdfPainter->drawText(QPointF(8738.5, 1696.5), "(8738.5, 1696.5)");
+        pdfPainter->drawText(QPointF(252.5, 8059.5), "(252.5, 8059.5)");
+        pdfPainter->drawText(QPointF(3938, 8059.5), "(3938, 8059.5)");
+        pdfPainter->drawText(QPointF(5052.5, 7625.5), "(5052.5, 7625.5)");
+        pdfPainter->drawText(QPointF(5052.5, 8059.5), "(5052.5, 8059.5)");
+        pdfPainter->drawText(QPointF(8738.5, 8059.5), "(8738.5, 8059.5)");
+        pdfPainter->drawText(QPointF(2697.2, 3433.7), "(2697.2, 3433.7)");
+        pdfPainter->drawText(QPointF(2697.2, 1696.5), "(2697.2, 1696.5)");
+        pdfPainter->drawText(QPointF(1252.5, 5605.5), "(1252.5, 5605.5)");
+    }
+
+    /*
+
+    // 默认文字
+    // 皈依师签字
+    QString guiyi_shifu = QString("皈依师（签字）");
+    pdfPainter->setPen(Qt::black);
+    pdfPainter->drawText(QPointF(505, 1009.5), guiyi_shifu);
+    pdfPainter->drawText(QPointF(5305, 1009.5), guiyi_shifu);
+    pdfPainter->drawText(QPointF(505, 7373), guiyi_shifu);
+    pdfPainter->drawText(QPointF(5305, 7373), guiyi_shifu);
+
+    // 皈依寺院
+    QString siyuan = QString("皈依寺院：北京龙泉寺");
+    pdfPainter->drawText(QPointF(505, 1596.5), siyuan);
+
+    // 照片
+    QPixmap pixmap("/Users/quqinglei/Desktop/myself.jpg"); // [tbd just test]
+    pdfPainter->drawPixmap(2697.2, 1696.5, 1245.8, 1737.2, pixmap);
+
+    // 姓名
+    pdfPainter->drawText(QPointF(505,2030), "姓名");
+    pdfPainter->drawText(QPointF(505 + 1000, 2030), "屈庆磊");
+
+    // 性别
+    pdfPainter->drawText(QPointF(505, 2464.3), "性别");
+    pdfPainter->drawText(QPointF(505 + 1000, 2464.3), "男");
+
+    // 法名
+    pdfPainter->drawText(QPointF(505, 2898.6), "法名");
+    pdfPainter->drawText(QPointF(505 + 1000, 2898.6), "贤磊");
+
+    // 民族
+    pdfPainter->drawText(QPointF(505, 3332.9), "民族");
+    pdfPainter->drawText(QPointF(505 + 1000, 3332.9), "汉族");
+
+    // 出生年月
+    pdfPainter->drawText(QPointF(505, 3767.2), "出生年月");
+    pdfPainter->drawText(QPointF(505 + 1000, 3767.2), "1987-04-04");
+
+    // 文化程度
+    pdfPainter->drawText(QPointF(505, 4201.5), "文化程度");
+    pdfPainter->drawText(QPointF(505 + 1000, 4201.5), "大学本科");
+
+    // 现居地址
+    pdfPainter->drawText(QPointF(505, 4635.8), "现居地址");
+    pdfPainter->drawText(QPointF(505 + 1000, 4635.8), "北京 北京 昌平 霍营");
+
+    // 皈依编号
+    pdfPainter->drawText(QPointF(505, 5070.1), "皈依编号");
+    pdfPainter->drawText(QPointF(505 + 1000, 5070.1), "A0000012933");
+
+    // 发证时间
+    pdfPainter->drawText(QPointF(505, 5504.4), "发证时间");
+    pdfPainter->drawText(QPointF(505 + 1000, 5504.4), "2014-11-11");
+
+    */
+
     pdfPainter->end();
     pdfFile.close();
 
@@ -392,7 +592,7 @@ void MainWindow::on_actionExportPdf_triggered()
     fileName = QFileDialog::getSaveFileName(this, "打开保存文件路径", "", "pdf (*.pdf)");
     if (fileName.isNull()) return;
     savePdfs(fileName, model, "", "/Users/quqinglei/Destkop/");
-    savePdfs(fileName, modelFemale, "", "/Users/quqinglei/Destkop/");
+    savePdfs(QString("%1.female").arg(fileName), modelFemale, "", "/Users/quqinglei/Destkop/");
 }
 
 void MainWindow::on_toolButtonImagePath_clicked()
@@ -417,5 +617,6 @@ void MainWindow::on_toolButtonBackPath_clicked()
 
 void MainWindow::on_actionCard_triggered()
 {
-    createCard("/tmp/hello.pdf", model, "", "");
+    createCard("/Users/quqinglei/Desktop/hello.pdf", model, "", "");
+    createCert("/Users/quqinglei/Desktop/cert.pdf", model, "", "");
 }

@@ -5,7 +5,6 @@
 #include <QLineEdit>
 #include <QMenu>
 #include <QDebug>
-#include <QtXlsx>
 #include <QtSql>
 #include <QTcpSocket>
 #include <QMessageBox>
@@ -15,6 +14,8 @@
 #include <QPdfWriter>
 #include <QPainter>
 #include <QFileDialog>
+#include <QPageLayout>
+#include <QMarginsF>
 #include <QFile>
 #include <QFont>
 #include <QPixmap>
@@ -40,6 +41,7 @@ public:
     void setModel(QSqlTableModel *mod, QString tableName, QTableView *view);
     void savePdfs(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
     void createCard(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
+    void createCert(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
 
     QLineEdit *lineEditSearch;
     QLineEdit *lineEditConfig;
