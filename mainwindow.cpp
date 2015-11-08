@@ -230,7 +230,7 @@ void MainWindow::createCert(QString fileName, QSqlTableModel *mod, QString filte
 
     QPdfWriter *pdfWriter = new QPdfWriter(&pdfFile);
     pdfWriter->setPageMargins(QMarginsF(0, 0, 0, 0));
-    pdfWriter->setPageSize(QPagedPaintDevice::A4);
+    pdfWriter->setPageSize(QPagedPaintDevice::A5);
     pdfWriter->setPageOrientation(QPageLayout::Landscape);
 
     QPainter *pdfPainter = new QPainter(pdfWriter);
@@ -238,6 +238,7 @@ void MainWindow::createCert(QString fileName, QSqlTableModel *mod, QString filte
     //pdfPainter->setPen(Qt::blue);
     //pdfPainter->drawRect(0, 0, 9600, 13700);
 
+    /*
     int middle = 4800;
     int width = 9600;
     int height = 13700;
@@ -279,7 +280,9 @@ void MainWindow::createCert(QString fileName, QSqlTableModel *mod, QString filte
         QPoint pb(rec[i]->x() + rec[i]->width(), rec[i]->y() + label);
         pdfPainter->drawLine(pa, pb);
     }
+    */
 
+    pdfWriter->newPage();
     pdfPainter->end();
     pdfFile.close();
 
@@ -339,6 +342,7 @@ void MainWindow::createCard(QString fileName, QSqlTableModel *mod, QString filte
     pdfPainter->drawLine(QPointF(1252.5, 1696.5), QPointF(1252.5, 5605.5));
 
     // mark
+    /*
     {
         pdfPainter->setPen(Qt::blue);
         pdfPainter->drawText(QPointF(252.5, 252.5), "(252.5, 252.5)");
@@ -377,8 +381,8 @@ void MainWindow::createCard(QString fileName, QSqlTableModel *mod, QString filte
         pdfPainter->drawText(QPointF(2697.2, 1696.5), "(2697.2, 1696.5)");
         pdfPainter->drawText(QPointF(1252.5, 5605.5), "(1252.5, 5605.5)");
     }
+    */
 
-    /*
 
     // 默认文字
     // 皈依师签字
@@ -433,8 +437,6 @@ void MainWindow::createCard(QString fileName, QSqlTableModel *mod, QString filte
     pdfPainter->drawText(QPointF(505, 5504.4), "发证时间");
     pdfPainter->drawText(QPointF(505 + 1000, 5504.4), "2014-11-11");
 
-    */
-
     pdfPainter->end();
     pdfFile.close();
 
@@ -485,7 +487,7 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
     pdf_writer->setPageSize(QPagedPaintDevice::A4);
 
     qDebug() << filter;
-    //mod->setFilter(filter);
+    mod->setFilter(filter);
     mod->select();
 
     for (int i = 0; i < mod->rowCount(); i += 8) {
@@ -509,6 +511,7 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
         pdf_painter->drawText(QRect(footer, 13400, 600, 300), QString("%2").arg(pageNum + 1));
         pdf_painter->drawLine(QPoint(pixMapMagin, 300), QPoint(9000, 300));
         for(int m = 0; m < 8; ++m) {
+            qDebug() << m;
             record[m] = mod->record(i + m);
             /* make one page pdf */
             /* set image */
@@ -554,22 +557,22 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
             QString pid = QString("身份证：%1").arg(record[m].value("personnel_id").toString());
 
             pdf_painter->drawText(QRect(leftMargin, topMargin + height, 10000, 300), name);
-            pdf_painter->drawText(QRect(leftMargin + 2500, topMargin + height, 20000, 300), fname);
-            pdf_painter->drawText(QRect(leftMargin + 5000, topMargin + height, 20000, 300), gender);
+            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height, 20000, 300), fname);
+            pdf_painter->drawText(QRect(leftMargin + 4600, topMargin + height, 20000, 300), gender);
 
             pdf_painter->drawText(QRect(leftMargin, topMargin + height + 300, 20000, 300), race);
-            pdf_painter->drawText(QRect(leftMargin + 2500, topMargin + height + 300, 20000, 300), birthday);
-            pdf_painter->drawText(QRect(leftMargin + 5000, topMargin + height + 300, 20000, 300), degree);
+            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height + 300, 20000, 300), birthday);
+            pdf_painter->drawText(QRect(leftMargin + 4600, topMargin + height + 300, 20000, 300), degree);
 
             pdf_painter->drawText(QRect(leftMargin, topMargin + height + 600, 20000, 300), addr);
-            pdf_painter->drawText(QRect(leftMargin + 2500, topMargin + height + 600, 20000, 300), job);
-            pdf_painter->drawText(QRect(leftMargin + 5000, topMargin + height + 600, 20000, 300), level_time);
+            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height + 600, 20000, 300), job);
+            pdf_painter->drawText(QRect(leftMargin + 4600, topMargin + height + 600, 20000, 300), level_time);
 
-            pdf_painter->drawText(QRect(leftMargin, topMargin + height + 900, 20000, 300), code);
-            pdf_painter->drawText(QRect(leftMargin + 2500, topMargin + height + 900, 20000, 300), phone);
-            pdf_painter->drawText(QRect(leftMargin + 5000, topMargin + height + 900, 20000, 300), pid);
+            pdf_painter->drawText(QRect(leftMargin, topMargin + height + 900, 20000, 300), QString("%1/%2").arg(code).arg(receipt));
+            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height + 900, 20000, 300), phone);
+            pdf_painter->drawText(QRect(leftMargin + 4600, topMargin + height + 900, 20000, 300), pid);
 
-            pdf_painter->drawLine(QPoint(pixMapMagin, 1900 + height), QPoint(9000, 1900 + height));
+            //pdf_painter->drawLine(QPoint(pixMapMagin, 1900 + height), QPoint(9000, 1900 + height));
 
 
         }
@@ -586,13 +589,16 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
 
 void MainWindow::on_actionExportPdf_triggered()
 {
-    // export all pdf
-    // [tbd] test if database is connected, if not QmessageBox info, return
     QString fileName;
     fileName = QFileDialog::getSaveFileName(this, "打开保存文件路径", "", "pdf (*.pdf)");
     if (fileName.isNull()) return;
-    savePdfs(fileName, model, "", "/Users/quqinglei/Destkop/");
-    savePdfs(QString("%1.female").arg(fileName), modelFemale, "", "/Users/quqinglei/Destkop/");
+
+    QString maleFileName, femaleFileName;
+    maleFileName = fileName.section('0', 0, 0) + ".male.pdf";
+    femaleFileName = fileName.section('0', 0, 0) + ".female.pdf";
+    qDebug() << maleFileName << femaleFileName;
+    savePdfs(maleFileName, model, "", "/Users/quqinglei/Destkop/");
+    savePdfs(femaleFileName, modelFemale, "", "/Users/quqinglei/Destkop/");
 }
 
 void MainWindow::on_toolButtonImagePath_clicked()
