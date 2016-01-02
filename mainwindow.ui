@@ -62,7 +62,7 @@
        <attribute name="title">
         <string>设置</string>
        </attribute>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>240</x>
@@ -84,7 +84,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>240</x>
@@ -124,7 +124,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>240</x>
@@ -195,6 +195,7 @@
    </attribute>
    <addaction name="actionDb"/>
    <addaction name="actionRefresh"/>
+   <addaction name="actionExcel"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="styleSheet">
@@ -250,6 +251,11 @@
   <action name="actionCard">
    <property name="text">
     <string>导出证件</string>
+   </property>
+  </action>
+  <action name="actionExcel">
+   <property name="text">
+    <string>excel</string>
    </property>
   </action>
  </widget>

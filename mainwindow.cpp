@@ -637,3 +637,8 @@ void MainWindow::on_actionCard_triggered()
     createCard("/Users/quqinglei/Desktop/hello.pdf", model, "", "");
     createCert("/Users/quqinglei/Desktop/cert.pdf", model, "", "");
 }
+
+void MainWindow::on_actionExcel_triggered()
+{
+    qDebug() << "export excel here";
+}

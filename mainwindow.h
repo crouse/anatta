@@ -21,6 +21,7 @@
 #include <QPixmap>
 #include <QPen>
 #include <QDate>
+#include <QtXlsx>
 #define DB_NAME "citta"
 #define DB_PASS "attic"
 #define DB_USER "citta"
@@ -69,6 +70,8 @@ private slots:
     void on_toolButtonBackPath_clicked();
 
     void on_actionCard_triggered();
+
+    void on_actionExcel_triggered();
 
 private:
     Ui::MainWindow *ui;
