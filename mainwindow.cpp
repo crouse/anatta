@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    serverIp = "127.0.0.1";
+    serverIp = "192.168.1.5";
 
     {
         lineEditSearch = new QLineEdit;
@@ -399,7 +399,8 @@ void MainWindow::createCard(QString fileName, QSqlTableModel *mod, QString filte
 
     // 照片
     QPixmap pixmap("/Users/quqinglei/Desktop/myself.jpg"); // [tbd just test]
-    pdfPainter->drawPixmap(2697.2, 1696.5, 1245.8, 1737.2, pixmap);
+    //pdfPainter->drawPixmap(2697.2, 1696.5, 1245.8, 1737.2, pixmap);
+    pdfPainter->drawPixmap(2697, 1696, 1246, 1737, pixmap);
 
     // 姓名
     pdfPainter->drawText(QPointF(505,2030), "姓名");
@@ -527,14 +528,16 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
                 return;
             }
 
-            QString pixmapAbsPath = QString("%1/%2.jpg").arg(pixmapPath).arg(receipt);
+            QString pixmapAbsPath = QString("%1/%2.jpeg").arg(pixmapPath).arg(receipt);
             qDebug() << pixmapAbsPath;
-            //QPixmap pixmap(pixmapAbsPath);
-            QPixmap pixmap("/Users/quqinglei/Desktop/myself.jpg"); // [tbd just test]
+            QPixmap pixmap(pixmapAbsPath);
+            //QPixmap pixmap("/Users/quqinglei/Desktop/myself.jpg"); // [tbd just test]
 
             int height = m * blockHeight;
 
-            pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 885, 1239, pixmap);
+            //pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 885, 1239, pixmap);
+            //pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 973, 1362, pixmap);
+            pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 973, 1251, pixmap);
 
             pdf_painter->setFont(font);
             QString name = QString("姓名：%1").arg(record[m].value("name").toString());
@@ -547,6 +550,7 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
                     .arg(record[m].value("province").toString())
                     .arg(record[m].value("city").toString())
                     .arg(record[m].value("district").toString());
+            QString health = QString("健康状况：%1").arg(record[m].value("health").toString());
             QString job = QString("工作：%1").arg(record[m].value("job").toString());
             QString level_time = QString("学佛时间/程度：%1/%2")
                     .arg(record[m].value("year2start_learning_buddhism").toString())
@@ -556,23 +560,30 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
             QString phone = QString("手机：%1").arg(record[m].value("phone_num").toString());
             QString pid = QString("身份证：%1").arg(record[m].value("personnel_id").toString());
 
-            pdf_painter->drawText(QRect(leftMargin, topMargin + height, 10000, 300), name);
-            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height, 20000, 300), fname);
-            pdf_painter->drawText(QRect(leftMargin + 4600, topMargin + height, 20000, 300), gender);
+            pdf_painter->drawText(QRect(leftMargin + 50, topMargin + height, 2000, 300), name);
+            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height, 2000, 300), fname);
+            pdf_painter->drawText(QRect(leftMargin + 4100, topMargin + height, 2000, 300), gender);
 
-            pdf_painter->drawText(QRect(leftMargin, topMargin + height + 300, 20000, 300), race);
-            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height + 300, 20000, 300), birthday);
-            pdf_painter->drawText(QRect(leftMargin + 4600, topMargin + height + 300, 20000, 300), degree);
+            QRectF rect(leftMargin + 6100, topMargin + height, 1100, 1000);
+            pdf_painter->drawRect(rect);
+            pdf_painter->drawLine(QPoint(leftMargin + 6100, topMargin + height + 300), QPoint(leftMargin + 7200, topMargin + height + 300));
+            pdf_painter->drawText(QRect(leftMargin + 6200, topMargin + height + 20, 2000, 300), "签字栏");
 
-            pdf_painter->drawText(QRect(leftMargin, topMargin + height + 600, 20000, 300), addr);
-            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height + 600, 20000, 300), job);
-            pdf_painter->drawText(QRect(leftMargin + 4600, topMargin + height + 600, 20000, 300), level_time);
+            pdf_painter->drawText(QRect(leftMargin + 50, topMargin + height + 300, 2000, 300), race);
+            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height + 300, 2000, 300), birthday);
+            pdf_painter->drawText(QRect(leftMargin + 4100, topMargin + height + 300, 2000, 300), degree);
 
-            pdf_painter->drawText(QRect(leftMargin, topMargin + height + 900, 20000, 300), QString("%1/%2").arg(code).arg(receipt));
-            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height + 900, 20000, 300), phone);
-            pdf_painter->drawText(QRect(leftMargin + 4600, topMargin + height + 900, 20000, 300), pid);
+            pdf_painter->drawText(QRect(leftMargin + 50, topMargin + height + 600, 2000, 300), health);
+            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height + 600, 2000, 300), job);
+            pdf_painter->drawText(QRect(leftMargin + 4100, topMargin + height + 600, 2000, 300), level_time);
 
-            //pdf_painter->drawLine(QPoint(pixMapMagin, 1900 + height), QPoint(9000, 1900 + height));
+            pdf_painter->drawText(QRect(leftMargin + 50, topMargin + height + 900, 2000, 300), QString("%1/%2").arg(code).arg(receipt));
+            pdf_painter->drawText(QRect(leftMargin + 2100, topMargin + height + 900, 2000, 300), phone);
+            pdf_painter->drawText(QRect(leftMargin + 4100, topMargin + height + 900, 2000, 300), pid);
+
+            pdf_painter->drawText(QRect(leftMargin + 50, topMargin + height + 1200, 9000, 300), QString("%1").arg(addr));
+
+            pdf_painter->drawLine(QPoint(pixMapMagin, 1900 + height), QPoint(9000, 1900 + height));
 
 
         }
@@ -597,8 +608,8 @@ void MainWindow::on_actionExportPdf_triggered()
     maleFileName = fileName.section('0', 0, 0) + ".male.pdf";
     femaleFileName = fileName.section('0', 0, 0) + ".female.pdf";
     qDebug() << maleFileName << femaleFileName;
-    savePdfs(maleFileName, model, "", "/Users/quqinglei/Destkop/");
-    savePdfs(femaleFileName, modelFemale, "", "/Users/quqinglei/Destkop/");
+    savePdfs(maleFileName, model, "", "/Users/quqinglei/Desktop/photos");
+    savePdfs(femaleFileName, modelFemale, "", "/Users/quqinglei/Destkop/photos");
 }
 
 void MainWindow::on_toolButtonImagePath_clicked()

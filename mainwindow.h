@@ -22,7 +22,7 @@
 #include <QPen>
 #include <QDate>
 #define DB_NAME "citta"
-#define DB_PASS "1!"
+#define DB_PASS "attic"
 #define DB_USER "citta"
 
 namespace Ui {
