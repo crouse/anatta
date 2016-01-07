@@ -254,6 +254,10 @@
    </property>
   </action>
   <action name="actionExcel">
+   <property name="icon">
+    <iconset resource="pics.qrc">
+     <normaloff>:/pics/excel.png</normaloff>:/pics/excel.png</iconset>
+   </property>
    <property name="text">
     <string>excel</string>
    </property>

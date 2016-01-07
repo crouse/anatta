@@ -41,6 +41,7 @@ public:
     bool connectDatabase();
     void setModel(QSqlTableModel *mod, QString tableName, QTableView *view);
     void savePdfs(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
+    void exportExcel(QString fileName, QSqlTableModel *mod);
     void createCard(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
     void createCert(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
 

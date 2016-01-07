@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <QDesktopServices>
+#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -450,6 +452,7 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
 #ifndef ONE_PAGE_NUM
 #define ONE_PAGE_NUM 8
 #endif
+    pixmapPath = "/Users/quqinglei/RsyncShare"; // tobedone
     if (!mod) {
         QMessageBox::information(this, "warn", "数据库未连接或者没有导出的数据");
         return;
@@ -528,16 +531,16 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
                 return;
             }
 
-            QString pixmapAbsPath = QString("%1/%2.jpeg").arg(pixmapPath).arg(receipt);
+            QString pixmapAbsPath = QString("%1/%2.png").arg(pixmapPath).arg(receipt);
             qDebug() << pixmapAbsPath;
             QPixmap pixmap(pixmapAbsPath);
             //QPixmap pixmap("/Users/quqinglei/Desktop/myself.jpg"); // [tbd just test]
 
             int height = m * blockHeight;
 
-            //pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 885, 1239, pixmap);
+            pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 885, 1239, pixmap);
             //pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 973, 1362, pixmap);
-            pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 973, 1251, pixmap);
+            //pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 973, 1251, pixmap);
 
             pdf_painter->setFont(font);
             QString name = QString("姓名：%1").arg(record[m].value("name").toString());
@@ -638,7 +641,115 @@ void MainWindow::on_actionCard_triggered()
     createCert("/Users/quqinglei/Desktop/cert.pdf", model, "", "");
 }
 
+void MainWindow::exportExcel(QString fileName, QSqlTableModel *mod)
+{
+    QXlsx::Document xlsx;
+    QString names[] = {
+        "姓名",
+        "性别",
+        "职业",
+        "特长",
+        "法名",
+        "皈依法会名称",
+        "皈依日期",
+        "皈依年度",
+        "皈依证号",
+        "出生年月",
+        "身份证号",
+        "电话",
+        "民族",
+        "文化程度",
+        "健康状况",
+        "固定电话",
+        "填表时间",
+        "收据编号",
+        "工作单位",
+        "省(直辖市/自治区)",
+        "市",
+        "区/县",
+        "通讯地址",
+        "邮编",
+        "毕业时间",
+        "毕业学校",
+        "工作入职时间1",
+        "工作单位1",
+        "工作入职时间2",
+        "工作入职单位2",
+        "退休时间",
+        "退休单位",
+        "学佛时间",
+        "学佛时长",
+        "是否深刻理解佛法",
+        "以何因缘接触佛法",
+        "所读经典部数",
+        "认为易学经典",
+        "认为不易学经典",
+        "感悟最深的一句话",
+        "家庭成员三宝弟子"
+    };
+
+    for(int i = 0; i < 41; i++) {
+        xlsx.write(1, i+1, names[i]);
+    }
+
+    mod->select();
+    for(int i = 0; i < mod->rowCount(); i++) {
+        int j = i + 2;
+        xlsx.write(j, 1, mod->record(i).value("name").toString());
+        xlsx.write(j, 2, mod->record(i).value("gender").toString());
+        xlsx.write(j, 3, mod->record(i).value("job").toString());
+        xlsx.write(j, 4, mod->record(i).value("hobby").toString());
+        xlsx.write(j, 5, mod->record(i).value("fname").toString());
+        xlsx.write(j, 6, mod->record(i).value("fahui_name").toString());
+        xlsx.write(j, 7, mod->record(i).value("mod_time").toString().left(10));
+        xlsx.write(j, 8, mod->record(i).value("mod_time").toString().left(4));
+        xlsx.write(j, 9, mod->record(i).value("code").toString());
+        xlsx.write(j, 10, mod->record(i).value("birthday").toString());
+        xlsx.write(j, 11, mod->record(i).value("personnel_id").toString());
+        xlsx.write(j, 12, mod->record(i).value("phone_num").toString());
+        xlsx.write(j, 13, mod->record(i).value("race").toString());
+        xlsx.write(j, 14, mod->record(i).value("degree").toString());
+        xlsx.write(j, 15, mod->record(i).value("health").toString());
+        xlsx.write(j, 16, mod->record(i).value("telephone_num").toString());
+        xlsx.write(j, 17, mod->record(i).value("mod_time").toString().left(10));
+        xlsx.write(j, 18, mod->record(i).value("receipt").toString());
+        xlsx.write(j, 19, mod->record(i).value("workplace").toString());
+        xlsx.write(j, 20, mod->record(i).value("province").toString());
+        xlsx.write(j, 21, mod->record(i).value("city").toString());
+        xlsx.write(j, 22, mod->record(i).value("district").toString());
+        xlsx.write(j, 23, mod->record(i).value("address").toString());
+        xlsx.write(j, 24, mod->record(i).value("postcode").toString());
+        xlsx.write(j, 25, mod->record(i).value("graduate_time").toString());
+        xlsx.write(j, 26, mod->record(i).value("first_job_entry_time").toString());
+        xlsx.write(j, 27, mod->record(i).value("first_job_workplace").toString());
+        xlsx.write(j, 28, mod->record(i).value("second_job_entry_time").toString());
+        xlsx.write(j, 29, mod->record(i).value("second_job_workplace").toString());
+        xlsx.write(j, 30, mod->record(i).value("retirement_date").toString());
+        xlsx.write(j, 31, mod->record(i).value("retirement_workplace").toString());
+        xlsx.write(j, 32, mod->record(i).value("year2learning_buddhism").toString());
+        xlsx.write(j, 33, mod->record(i).value("years_of_learning_buddhism").toString());
+        xlsx.write(j, 34, mod->record(i).value("deep_understanding_of_dharma").toString());
+        xlsx.write(j, 35, mod->record(i).value("reason2learning_dharma").toString());
+        xlsx.write(j, 36, mod->record(i).value("nums_of_buddhism_book").toString());
+        xlsx.write(j, 37, mod->record(i).value("easy2learn_buddhism_book").toString());
+        xlsx.write(j, 38, mod->record(i).value("hard2read").toString());
+        xlsx.write(j, 39, mod->record(i).value("maxim").toString());
+        xlsx.write(j, 40, mod->record(i).value("buddhist_disciples_of_family").toString());
+    }
+    xlsx.saveAs(fileName);
+}
+
 void MainWindow::on_actionExcel_triggered()
 {
-    qDebug() << "export excel here";
+    QDateTime time = QDateTime::currentDateTime();
+    QString currentDate = time.toString("yyyy-MM-dd");
+    QString savePath;
+    if (ui->lineEditBackPath->text().isEmpty()) {
+        savePath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    } else {
+        savePath = ui->lineEditBackPath->text();
+    }
+
+    exportExcel(QString("%1/男众-%2.xlsx").arg(savePath).arg(currentDate), model);
+    exportExcel(QString("%1/女众-%2.xlsx").arg(savePath).arg(currentDate), modelFemale);
 }
