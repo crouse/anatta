@@ -40,7 +40,7 @@ public:
     bool databaseTest();
     bool connectDatabase();
     void setModel(QSqlTableModel *mod, QString tableName, QTableView *view);
-    void savePdfs(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
+    void savePdfs(QString fileName, QSqlTableModel *mod, QString filter);
     void exportExcel(QString fileName, QSqlTableModel *mod);
     void createCard(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
     void createCert(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
@@ -73,6 +73,10 @@ private slots:
     void on_actionCard_triggered();
 
     void on_actionExcel_triggered();
+
+    void on_actionPdf_triggered();
+
+    void on_toolButton_clicked();
 
 private:
     Ui::MainWindow *ui;

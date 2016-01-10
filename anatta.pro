@@ -24,3 +24,6 @@ FORMS    += mainwindow.ui
 
 RESOURCES += \
     pics.qrc
+
+DISTFILES += \
+    pics/pdf.png

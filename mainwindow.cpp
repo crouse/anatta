@@ -447,12 +447,11 @@ void MainWindow::createCard(QString fileName, QSqlTableModel *mod, QString filte
     delete pdfWriter;
 }
 
-void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath)
+void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter)
 {
 #ifndef ONE_PAGE_NUM
 #define ONE_PAGE_NUM 8
 #endif
-    pixmapPath = "/Users/quqinglei/RsyncShare"; // tobedone
     if (!mod) {
         QMessageBox::information(this, "warn", "数据库未连接或者没有导出的数据");
         return;
@@ -531,17 +530,20 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter,
                 return;
             }
 
-            QString pixmapAbsPath = QString("%1/%2.png").arg(pixmapPath).arg(receipt);
+            QString pixmapPath, pixmapAbsPath;
+            if (ui->lineEditImagePath->text().isEmpty()) {
+                pixmapPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+                pixmapAbsPath = QString("%1/RsyncShare/%2.png").arg(pixmapPath).arg(receipt);
+            } else {
+                pixmapPath = ui->lineEditImagePath->text();
+                pixmapAbsPath = QString("%1/%2.png").arg(pixmapPath).arg(receipt);
+            }
+
             qDebug() << pixmapAbsPath;
             QPixmap pixmap(pixmapAbsPath);
-            //QPixmap pixmap("/Users/quqinglei/Desktop/myself.jpg"); // [tbd just test]
-
             int height = m * blockHeight;
 
             pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 885, 1239, pixmap);
-            //pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 973, 1362, pixmap);
-            //pdf_painter->drawPixmap(pixMapMagin, topMargin + height, 973, 1251, pixmap);
-
             pdf_painter->setFont(font);
             QString name = QString("姓名：%1").arg(record[m].value("name").toString());
             QString gender = QString("性别：%1").arg(record[m].value("gender").toString());
@@ -611,8 +613,9 @@ void MainWindow::on_actionExportPdf_triggered()
     maleFileName = fileName.section('0', 0, 0) + ".male.pdf";
     femaleFileName = fileName.section('0', 0, 0) + ".female.pdf";
     qDebug() << maleFileName << femaleFileName;
-    savePdfs(maleFileName, model, "", "/Users/quqinglei/Desktop/photos");
-    savePdfs(femaleFileName, modelFemale, "", "/Users/quqinglei/Destkop/photos");
+
+    savePdfs(maleFileName, model, "");
+    savePdfs(femaleFileName, modelFemale, "");
 }
 
 void MainWindow::on_toolButtonImagePath_clicked()
@@ -752,4 +755,33 @@ void MainWindow::on_actionExcel_triggered()
 
     exportExcel(QString("%1/男众-%2.xlsx").arg(savePath).arg(currentDate), model);
     exportExcel(QString("%1/女众-%2.xlsx").arg(savePath).arg(currentDate), modelFemale);
+}
+
+void MainWindow::on_actionPdf_triggered()
+{
+    QDateTime time = QDateTime::currentDateTime();
+    QString currentDate = time.toString("yyyy-MM-dd");
+    QString savePath;
+    if (ui->lineEditBackPath->text().isEmpty()) {
+        savePath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    } else {
+        savePath = ui->lineEditBackPath->text();
+    }
+    savePdfs(QString("%1/男众-%2.pdf").arg(savePath).arg(currentDate), model, "");
+    savePdfs(QString("%1/女众-%2.pdf").arg(savePath).arg(currentDate), modelFemale, "");
+}
+
+void MainWindow::on_toolButton_clicked()
+{
+    QSqlQuery query;
+    QString fahui_name, last_male_code, last_female_code, sql;
+    fahui_name = ui->lineEditFahui_name->text();
+    last_male_code = ui->lineEditLastMaleCode->text();
+    last_female_code = ui->lineEditLastFemaleCode->text();
+    QString currentDate = QDateTime::currentDateTime().toString("yyyy-MM-dd");
+
+    sql = QString("replace into zen_config (`fahui_name`, `last_male_code`, `last_female_code`, `date`) values ('%1', '%2', '%3', '%4')")
+            .arg(fahui_name, last_male_code, last_female_code, currentDate);
+    query.exec(sql);
+    query.clear();
 }

@@ -27,7 +27,7 @@
        <enum>QTabWidget::South</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -65,13 +65,27 @@
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
-          <x>240</x>
-          <y>150</y>
-          <width>441</width>
-          <height>28</height>
+          <x>230</x>
+          <y>260</y>
+          <width>501</width>
+          <height>26</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>照片存放路径：</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QLineEdit" name="lineEditImagePath"/>
          </item>
@@ -87,31 +101,45 @@
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
-          <x>240</x>
-          <y>110</y>
-          <width>443</width>
+          <x>230</x>
+          <y>230</y>
+          <width>501</width>
           <height>26</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="QLabel" name="label">
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>法会信息：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditFahui_name">
            <property name="placeholderText">
             <string>法会名称</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_2">
+          <widget class="QLineEdit" name="lineEditLastMaleCode">
            <property name="placeholderText">
-            <string>男众起始数</string>
+            <string>上次男众最大皈依号</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_3">
+          <widget class="QLineEdit" name="lineEditLastFemaleCode">
            <property name="placeholderText">
-            <string>女众起始数</string>
+            <string>上次女众最大皈依号</string>
            </property>
           </widget>
          </item>
@@ -127,13 +155,27 @@
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
-          <x>240</x>
-          <y>190</y>
-          <width>441</width>
-          <height>26</height>
+          <x>230</x>
+          <y>290</y>
+          <width>501</width>
+          <height>28</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>数据备份路径：</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QLineEdit" name="lineEditBackPath"/>
          </item>
@@ -141,6 +183,32 @@
           <widget class="QToolButton" name="toolButtonBackPath">
            <property name="text">
             <string>数据备份路径</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>170</y>
+          <width>447</width>
+          <height>48</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>注意：法会信息要提前设定，主要是为了皈依证号的生成，所以千万不能写错</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>           照片存放路径是RSYNC服务的文件夹，默认是家路径下的 RsyncShare</string>
            </property>
           </widget>
          </item>
@@ -196,6 +264,7 @@
    <addaction name="actionDb"/>
    <addaction name="actionRefresh"/>
    <addaction name="actionExcel"/>
+   <addaction name="actionPdf"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="styleSheet">
@@ -260,6 +329,15 @@
    </property>
    <property name="text">
     <string>excel</string>
+   </property>
+  </action>
+  <action name="actionPdf">
+   <property name="icon">
+    <iconset resource="pics.qrc">
+     <normaloff>:/pics/pdf.png</normaloff>:/pics/pdf.png</iconset>
+   </property>
+   <property name="text">
+    <string>pdf</string>
    </property>
   </action>
  </widget>
