@@ -39,6 +39,8 @@ public:
     ~MainWindow();
     bool databaseTest();
     bool connectDatabase();
+    void setFahuiInfo();
+    void setPaths();
     void setModel(QSqlTableModel *mod, QString tableName, QTableView *view);
     void savePdfs(QString fileName, QSqlTableModel *mod, QString filter);
     void exportExcel(QString fileName, QSqlTableModel *mod);
@@ -49,6 +51,11 @@ public:
     QLineEdit *lineEditConfig;
     QLineEdit *lineEditEditor;
 
+    QString saveFilePath;
+    QString desktopPath;
+    QString homePath;
+    QString imageFilePath;
+    QString currentDate;
 
 private slots:
     void on_actionSetting_triggered();

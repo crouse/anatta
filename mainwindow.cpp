@@ -43,6 +43,9 @@ MainWindow::MainWindow(QWidget *parent) :
         //connect(lineEditEditor, SIGNAL(returnPressed()), this, SLOT(afterLineEditorEditorPressed()));
         ui->mainToolBar->addWidget(lineEditEditor);
     }
+
+    currentDate = QDateTime::currentDateTime().toString("yyyy-MM-dd");
+    setPaths();
 }
 
 MainWindow::~MainWindow()
@@ -76,6 +79,8 @@ bool MainWindow::connectDatabase()
         QMessageBox::critical(this, "数据库错误", db.lastError().text());
         return false;
     }
+
+    setFahuiInfo();
 
     return true;
 }
@@ -532,11 +537,9 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter)
 
             QString pixmapPath, pixmapAbsPath;
             if (ui->lineEditImagePath->text().isEmpty()) {
-                pixmapPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-                pixmapAbsPath = QString("%1/RsyncShare/%2.png").arg(pixmapPath).arg(receipt);
+                pixmapAbsPath = QString("%1/%2.png").arg(imageFilePath).arg(receipt);
             } else {
-                pixmapPath = ui->lineEditImagePath->text();
-                pixmapAbsPath = QString("%1/%2.png").arg(pixmapPath).arg(receipt);
+                pixmapAbsPath = QString("%1/%2.png").arg(imageFilePath).arg(receipt);
             }
 
             qDebug() << pixmapAbsPath;
@@ -626,16 +629,18 @@ void MainWindow::on_toolButtonImagePath_clicked()
                                                     QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks
                                                     );
     ui->lineEditImagePath->setText(dir);
+    imageFilePath = dir;
 }
 
 void MainWindow::on_toolButtonBackPath_clicked()
 {
-     QString dir = QFileDialog::getExistingDirectory(this,
+    QString dir = QFileDialog::getExistingDirectory(this,
                                                     tr("打开路径"),
                                                     "~/Desktop/backup",
                                                     QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks
                                                     );
     ui->lineEditBackPath->setText(dir);
+    saveFilePath = dir;
 }
 
 void MainWindow::on_actionCard_triggered()
@@ -767,8 +772,9 @@ void MainWindow::on_actionPdf_triggered()
     } else {
         savePath = ui->lineEditBackPath->text();
     }
-    savePdfs(QString("%1/男众-%2.pdf").arg(savePath).arg(currentDate), model, "");
-    savePdfs(QString("%1/女众-%2.pdf").arg(savePath).arg(currentDate), modelFemale, "");
+
+    savePdfs(QString("%1/男众-%2.pdf").arg(saveFilePath).arg(currentDate), model, "");
+    savePdfs(QString("%1/女众-%2.pdf").arg(saveFilePath).arg(currentDate), modelFemale, "");
 }
 
 void MainWindow::on_toolButton_clicked()
@@ -784,4 +790,46 @@ void MainWindow::on_toolButton_clicked()
             .arg(fahui_name, last_male_code, last_female_code, currentDate);
     query.exec(sql);
     query.clear();
+}
+
+void MainWindow::setFahuiInfo()
+{ // read database and set info
+    qDebug() << "set Fahui info";
+    QString fahui_name, last_male_code, last_female_code, sql;
+    QString currentDate = QDateTime::currentDateTime().toString("yyyy-MM-dd");
+
+    sql = QString("select `fahui_name`, `last_male_code`, `last_female_code` from zen_config where `date` = '%1'").arg(currentDate);
+    qDebug() << sql;
+    QSqlQuery q(sql);
+    QSqlRecord rec = q.record();
+    int fahui_name_col = rec.indexOf("fahui_name");
+    int last_male_code_col = rec.indexOf("last_male_code");
+    int last_female_code_col = rec.indexOf("last_female_code");
+
+    qDebug() << "Numbers of columns: " << rec.count();
+
+    while (q.next()) {
+        qDebug() << "here";
+        fahui_name = q.value(fahui_name_col).toString();
+        last_male_code = q.value(last_male_code_col).toString();
+        last_female_code = q.value(last_female_code_col).toString();
+    }
+
+    ui->lineEditFahui_name->setText(fahui_name);
+    ui->lineEditLastMaleCode->setText(last_male_code);
+    ui->lineEditLastFemaleCode->setText(last_female_code);
+}
+
+void MainWindow::setPaths()
+{
+    desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    homePath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    saveFilePath = QString("%1/Faihui/%3").arg(desktopPath).arg(currentDate);
+    imageFilePath = QString("%1/RsyncShare/").arg(homePath);
+    QDir *tmp = new QDir;
+    if (!tmp->exists(saveFilePath)) {
+        tmp->mkpath(saveFilePath);
+    }
+    ui->lineEditBackPath->setText(saveFilePath);
+    ui->lineEditImagePath->setText(imageFilePath);
 }

@@ -27,7 +27,7 @@
        <enum>QTabWidget::South</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -52,11 +52,6 @@
          </widget>
         </item>
        </layout>
-      </widget>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>统计</string>
-       </attribute>
       </widget>
       <widget class="QWidget" name="tabConfig">
        <attribute name="title">
@@ -117,8 +112,12 @@
              <bold>true</bold>
             </font>
            </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 102, 102);
+border-radius:4px;</string>
+           </property>
            <property name="text">
-            <string>法会信息：</string>
+            <string> 法会信息：</string>
            </property>
           </widget>
          </item>
@@ -188,7 +187,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>230</x>
@@ -214,6 +213,11 @@
          </item>
         </layout>
        </widget>
+      </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>数据</string>
+       </attribute>
       </widget>
      </widget>
     </item>
