@@ -43,6 +43,7 @@ public:
     void setPaths();
     void setModel(QSqlTableModel *mod, QString tableName, QTableView *view);
     void savePdfs(QString fileName, QSqlTableModel *mod, QString filter);
+    void savePrintPdfs(int gender, int from, int to); // 0: male, 1: female
     void exportExcel(QString fileName, QSqlTableModel *mod);
     void createCard(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
     void createCert(QString fileName, QSqlTableModel *mod, QString filter, QString pixmapPath);
@@ -84,6 +85,8 @@ private slots:
     void on_actionPdf_triggered();
 
     void on_toolButton_clicked();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;

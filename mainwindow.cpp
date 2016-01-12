@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     currentDate = QDateTime::currentDateTime().toString("yyyy-MM-dd");
     setPaths();
+    ui->spinBoxFrom->setRange(0, 2000);
+    ui->spinBoxTo->setRange(1, 2000);
 }
 
 MainWindow::~MainWindow()
@@ -832,4 +834,72 @@ void MainWindow::setPaths()
     }
     ui->lineEditBackPath->setText(saveFilePath);
     ui->lineEditImagePath->setText(imageFilePath);
+}
+
+void MainWindow::savePrintPdfs(int gender, int from, int to) // gender 0 male, 1 female
+{
+    QString table;
+    if (gender == 0) {
+        table = "zen_male";
+    } else {
+        table = "zen_female";
+    }
+
+    QString filename = QString("%1/%2__%3-%4.pdf").arg(saveFilePath).arg(table).arg(from).arg(to);
+
+    QString sql = QString("select `receipt`, `name`, `gender`, `fname`, `race`, `birthday`, `degree`, `province`, `city`, `district`, `address`, `code` from %1 where id >= '%2' and id <= '%3'")
+            .arg(table)
+            .arg(from)
+            .arg(to);
+
+    QSqlQuery q(sql);
+    int cnt = 1;
+
+    QFile f(filename);
+    f.open(QIODevice::WriteOnly);
+    QPdfWriter *writer = new QPdfWriter(&f);
+    QPainter *painter = new QPainter(writer);
+    QFont font;
+    font.setPointSize(8);
+    painter->setFont(font);
+
+    writer->setPageSize(QPagedPaintDevice::A4);
+
+    int pixMapMagin = 0;
+    int topMargin = 0;
+    int height = 0;
+    while (q.next()) {
+        QString receipt = q.value(0).toString();
+        QString pixmapAbsPath = QString("%1/%2.png").arg(imageFilePath).arg(receipt);
+        QPixmap pixmap(pixmapAbsPath);
+        height += 640;
+        painter->drawPixmap(pixMapMagin, topMargin + height, 442, 619, pixmap);
+        painter->drawLine(QPoint(0, height), QPoint(10000, height));
+        QStringList strs;
+        for (int i = 0; i < 12; i++) strs.append(q.value(i).toString());
+        painter->drawText(QRect(500, height + 200, 10000, 300), strs.join(","));
+        if (cnt % 20 == 0) {
+            painter->drawLine(QPoint(0, height + 640), QPoint(10000, height + 640));
+            writer->newPage();
+            pixMapMagin = 0;
+            topMargin = 0;
+            height = 0;
+        }
+        cnt += 1;
+    }
+
+    delete painter;
+    delete writer;
+    f.close();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    // gender_index: 0 男 1 女
+    QString gender = ui->comboBox->currentText();
+    int gender_index = ui->comboBox->currentIndex();
+    int from = ui->spinBoxFrom->text().toInt();
+    int to = ui->spinBoxTo->text().toInt();
+    qDebug() << gender << gender_index << from << to;
+    savePrintPdfs(gender_index, from, to);
 }
