@@ -27,7 +27,7 @@
        <enum>QTabWidget::South</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -222,7 +222,7 @@ border-radius:4px;</string>
         <property name="geometry">
          <rect>
           <x>290</x>
-          <y>150</y>
+          <y>130</y>
           <width>381</width>
           <height>16</height>
          </rect>
@@ -234,10 +234,10 @@ border-radius:4px;</string>
          </font>
         </property>
         <property name="text">
-         <string>注意：已打印数据不会重复打印，除非清除掉数据库里的打印位</string>
+         <string>注意：已打印数据不要重复打印，请每次打印20的倍数最佳</string>
         </property>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>290</x>
@@ -269,7 +269,11 @@ border-radius:4px;</string>
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="spinBoxFrom"/>
+          <widget class="QSpinBox" name="spinBoxFrom">
+           <property name="value">
+            <number>1</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_7">
@@ -279,7 +283,11 @@ border-radius:4px;</string>
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="spinBoxTo"/>
+          <widget class="QSpinBox" name="spinBoxTo">
+           <property name="value">
+            <number>20</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButton">
@@ -289,6 +297,19 @@ border-radius:4px;</string>
           </widget>
          </item>
         </layout>
+       </widget>
+       <widget class="QLabel" name="label_9">
+        <property name="geometry">
+         <rect>
+          <x>290</x>
+          <y>150</y>
+          <width>391</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>建议每次记录打印的始末，避免重复打印，重复制证，少制证</string>
+        </property>
        </widget>
       </widget>
      </widget>

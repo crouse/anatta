@@ -868,6 +868,25 @@ void MainWindow::savePrintPdfs(int gender, int from, int to) // gender 0 male, 1
     int pixMapMagin = 0;
     int topMargin = 0;
     int height = 0;
+
+    painter->drawText(QRect(500, 0, 10000, 300), QString("***师兄您好，请制证完成后把纸张原路送回，统一处理!!***"));
+    painter->drawLine(QPoint(0, 300), QPoint(10000, 300));
+    painter->drawLine(QPoint(0, 320), QPoint(10000, 320));
+    painter->drawLine(QPoint(0, 320), QPoint(0, 13440));
+    painter->drawLine(QPoint(445, 320), QPoint(445, 13440));
+    painter->drawLine(QPoint(1000, 320), QPoint(1000, 13440)); // receipt line
+    painter->drawLine(QPoint(1800, 320), QPoint(1800, 13440)); // name line
+    painter->drawLine(QPoint(2100, 320), QPoint(2100, 13440)); // gender line
+    painter->drawLine(QPoint(2600, 320), QPoint(2600, 13440)); // fname line
+    painter->drawLine(QPoint(3400, 320), QPoint(3400, 13440)); // race line
+    painter->drawLine(QPoint(4200, 320), QPoint(4200, 13440)); // birthday line
+    painter->drawLine(QPoint(4700, 320), QPoint(4700, 13440)); // degree line
+    painter->drawLine(QPoint(5400, 320), QPoint(5400, 13440)); // province line
+    painter->drawLine(QPoint(6100, 320), QPoint(6100, 13440)); // city line
+    painter->drawLine(QPoint(6900, 320), QPoint(6900, 13440)); // district line
+    painter->drawLine(QPoint(8500, 320), QPoint(8500, 13440)); // address line
+    // code with no line
+
     while (q.next()) {
         QString receipt = q.value(0).toString();
         QString pixmapAbsPath = QString("%1/%2.png").arg(imageFilePath).arg(receipt);
@@ -876,11 +895,44 @@ void MainWindow::savePrintPdfs(int gender, int from, int to) // gender 0 male, 1
         painter->drawPixmap(pixMapMagin, topMargin + height, 442, 619, pixmap);
         painter->drawLine(QPoint(0, height), QPoint(10000, height));
         QStringList strs;
-        for (int i = 0; i < 12; i++) strs.append(q.value(i).toString());
-        painter->drawText(QRect(500, height + 200, 10000, 300), strs.join(","));
+        /*
+         * for (int i = 0; i < 12; i++) strs.append(q.value(i).toString());
+         * painter->drawText(QRect(500, height + 200, 10000, 300), strs.join(","));
+        */
+        painter->drawText(QRect(500, height + 200, 500, 300), q.value(0).toString()); // receipt
+        painter->drawText(QRect(1050, height + 200, 800, 300), q.value(1).toString()); // name
+        painter->drawText(QRect(1850, height + 200, 800, 300), q.value(2).toString()); // gender
+        painter->drawText(QRect(2150, height + 200, 800, 300), q.value(3).toString()); // fname
+        painter->drawText(QRect(2650, height + 200, 800, 620), q.value(4).toString()); // race
+        painter->drawText(QRect(3450, height + 200, 800, 300), q.value(5).toString()); // birthday
+        painter->drawText(QRect(4250, height + 200, 800, 300), q.value(6).toString()); // degree
+        painter->drawText(QRect(4750, height + 200, 800, 620), q.value(7).toString()); // province
+        painter->drawText(QRect(5450, height + 200, 800, 620), q.value(8).toString()); // city
+        painter->drawText(QRect(6150, height + 200, 800, 620), q.value(9).toString()); // district
+        painter->drawText(QRect(6950, height + 200, 1500, 620), q.value(10).toString()); // address
+        painter->drawText(QRect(8550, height + 200, 1200, 300), q.value(11).toString()); // code
+
         if (cnt % 20 == 0) {
             painter->drawLine(QPoint(0, height + 640), QPoint(10000, height + 640));
             writer->newPage();
+
+            painter->drawText(QRect(500, 0, 10000, 300), QString("***师兄您好，请制证完成后把纸张原路送回，统一处理!!***"));
+            painter->drawLine(QPoint(0, 320), QPoint(0, 13440));
+            painter->drawLine(QPoint(0, 300), QPoint(10000, 300));
+            painter->drawLine(QPoint(0, 320), QPoint(10000, 320));
+            painter->drawLine(QPoint(445, 320), QPoint(445, 13440));
+            painter->drawLine(QPoint(1000, 320), QPoint(1000, 13440)); // receipt line
+            painter->drawLine(QPoint(1800, 320), QPoint(1800, 13440)); // name line
+            painter->drawLine(QPoint(2100, 320), QPoint(2100, 13440)); // gender line
+            painter->drawLine(QPoint(2600, 320), QPoint(2600, 13440)); // fname line
+            painter->drawLine(QPoint(3400, 320), QPoint(3400, 13440)); // race line
+            painter->drawLine(QPoint(4200, 320), QPoint(4200, 13440)); // birthday line
+            painter->drawLine(QPoint(4700, 320), QPoint(4700, 13440)); // degree line
+            painter->drawLine(QPoint(5400, 320), QPoint(5400, 13440)); // province line
+            painter->drawLine(QPoint(6100, 320), QPoint(6100, 13440)); // city line
+            painter->drawLine(QPoint(6900, 320), QPoint(6900, 13440)); // district line
+            painter->drawLine(QPoint(8500, 320), QPoint(8500, 13440)); // address line
+
             pixMapMagin = 0;
             topMargin = 0;
             height = 0;
