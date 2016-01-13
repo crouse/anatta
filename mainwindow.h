@@ -88,6 +88,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_pushButtonTruncateTable_clicked();
+
 private:
     Ui::MainWindow *ui;
     QString serverIp;

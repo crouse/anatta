@@ -955,3 +955,27 @@ void MainWindow::on_pushButton_clicked()
     qDebug() << gender << gender_index << from << to;
     savePrintPdfs(gender_index, from, to);
 }
+
+void MainWindow::on_pushButtonTruncateTable_clicked()
+{
+   QString passcode = QString("truncate");
+   QString inputPasscode = ui->lineEditTruncateTable->text();
+   if(passcode == inputPasscode) {
+       qDebug() << "clean table";
+       QSqlQuery query;
+       query.exec("truncate zen_male; truncate zen_female; truncate zen_config;");
+
+       // delete images
+       QDir dir(imageFilePath);
+       dir.setNameFilters(QStringList() << "*.png");
+       foreach (QString dirFile, dir.entryList()) {
+           dir.remove(dirFile);
+       }
+       ui->labelInitStat->setText("数据库在开始时已经清理，请勿在中途清理数据库！！！");
+       QMessageBox::information(this, "Yes", "成功初始化");
+   } else {
+        QMessageBox::information(this, "No", "输入口令错误");
+   }
+
+   ui->lineEditTruncateTable->clear();
+}
