@@ -151,6 +151,7 @@ void MainWindow::setModel(QSqlTableModel *mod, QString tableName, QTableView *vi
     mod->setHeaderData(48, Qt::Horizontal, "记录写入时间");
     mod->setHeaderData(49, Qt::Horizontal, "打印状态"); // default 0, success 1
     mod->setHeaderData(50, Qt::Horizontal, "数据准备情况");
+    mod->setHeaderData(51, Qt::Horizontal, "法会名称");
     mod->select();
 
     //ui->tableView->setModel(model);
