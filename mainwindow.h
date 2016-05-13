@@ -90,6 +90,12 @@ private slots:
 
     void on_pushButtonTruncateTable_clicked();
 
+
+    int getImages();
+    void makePhotos(QString imagePath, QString savePath, int imageWidth, int imageHeight);
+
+    void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
     QString serverIp;

@@ -9,7 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    serverIp = "192.168.1.5";
+    // serverIp = "192.168.1.5";
+    serverIp = "127.0.0.1";
 
     {
         lineEditSearch = new QLineEdit;
@@ -28,7 +29,6 @@ MainWindow::MainWindow(QWidget *parent) :
         lineEditConfig->setStyleSheet("border-radius: 5px;");
         lineEditConfig->setPlaceholderText("服务器地址");
         lineEditConfig->setText(serverIp);
-        lineEditConfig->setReadOnly(true);
         //connect(lineEditConfig, SIGNAL(returnPressed()), this, SLOT(setServerAddr()));
         ui->mainToolBar->addWidget(lineEditConfig);
     }
@@ -61,6 +61,7 @@ void MainWindow::on_actionSetting_triggered()
 
 bool MainWindow::databaseTest()
 {
+    serverIp = lineEditConfig->text().trimmed();
     bool ret;
     QTcpSocket tsock;
     tsock.connectToHost(serverIp, 3306);
@@ -503,23 +504,23 @@ void MainWindow::savePdfs(QString fileName, QSqlTableModel *mod, QString filter)
 
     for (int i = 0; i < mod->rowCount(); i += 8) {
         /* handle page margin */
-        if (pageNum % 2 == 0) {
             pixMapMagin = 800;
             leftMargin = 1800;
             leftWordMargin = leftMargin + 1100;
             footer = 8500;
-        } else {
+
+            /*
             pixMapMagin = 400;
             leftMargin = 1400;
             leftWordMargin = leftMargin + 1100;
             footer = 1500;
-        }
+            */
 
         headerPos = 7500;
 
         QSqlRecord record[ONE_PAGE_NUM];
 
-        pdf_painter->drawText(QRect(footer, 13400, 600, 300), QString("%2").arg(pageNum + 1));
+        pdf_painter->drawText(QRect(footer, 13400, 600, 300), QString("%1").arg(pageNum + 1));
         pdf_painter->drawLine(QPoint(pixMapMagin, 300), QPoint(9000, 300));
         for(int m = 0; m < 8; ++m) {
             qDebug() << m;
@@ -731,21 +732,22 @@ void MainWindow::exportExcel(QString fileName, QSqlTableModel *mod)
         xlsx.write(j, 23, mod->record(i).value("address").toString());
         xlsx.write(j, 24, mod->record(i).value("postcode").toString());
         xlsx.write(j, 25, mod->record(i).value("graduate_time").toString());
-        xlsx.write(j, 26, mod->record(i).value("first_job_entry_time").toString());
-        xlsx.write(j, 27, mod->record(i).value("first_job_workplace").toString());
-        xlsx.write(j, 28, mod->record(i).value("second_job_entry_time").toString());
-        xlsx.write(j, 29, mod->record(i).value("second_job_workplace").toString());
-        xlsx.write(j, 30, mod->record(i).value("retirement_date").toString());
-        xlsx.write(j, 31, mod->record(i).value("retirement_workplace").toString());
-        xlsx.write(j, 32, mod->record(i).value("year2learning_buddhism").toString());
-        xlsx.write(j, 33, mod->record(i).value("years_of_learning_buddhism").toString());
-        xlsx.write(j, 34, mod->record(i).value("deep_understanding_of_dharma").toString());
-        xlsx.write(j, 35, mod->record(i).value("reason2learning_dharma").toString());
-        xlsx.write(j, 36, mod->record(i).value("nums_of_buddhism_book").toString());
-        xlsx.write(j, 37, mod->record(i).value("easy2learn_buddhism_book").toString());
-        xlsx.write(j, 38, mod->record(i).value("hard2read").toString());
-        xlsx.write(j, 39, mod->record(i).value("maxim").toString());
-        xlsx.write(j, 40, mod->record(i).value("buddhist_disciples_of_family").toString());
+        xlsx.write(j, 26, mod->record(i).value("graduate_school").toString());
+        xlsx.write(j, 27, mod->record(i).value("first_job_entry_time").toString());
+        xlsx.write(j, 28, mod->record(i).value("first_job_workplace").toString());
+        xlsx.write(j, 29, mod->record(i).value("second_job_entry_time").toString());
+        xlsx.write(j, 30, mod->record(i).value("second_job_workplace").toString());
+        xlsx.write(j, 31, mod->record(i).value("retirement_date").toString());
+        xlsx.write(j, 32, mod->record(i).value("retirement_workplace").toString());
+        xlsx.write(j, 33, mod->record(i).value("year2start_learning_buddhism").toString());
+        xlsx.write(j, 34, mod->record(i).value("years_of_learning_buddhism").toString());
+        xlsx.write(j, 35, mod->record(i).value("deep_understanding_of_dharma").toString());
+        xlsx.write(j, 36, mod->record(i).value("reason2learning_dharma").toString());
+        xlsx.write(j, 37, mod->record(i).value("nums_of_buddhism_book").toString());
+        xlsx.write(j, 38, mod->record(i).value("easy2learn_buddhism_book").toString());
+        xlsx.write(j, 39, mod->record(i).value("hard2read").toString());
+        xlsx.write(j, 40, mod->record(i).value("maxim").toString());
+        xlsx.write(j, 41, mod->record(i).value("buddhist_disciples_of_family").toString());
     }
     xlsx.saveAs(fileName);
 }
@@ -979,4 +981,116 @@ void MainWindow::on_pushButtonTruncateTable_clicked()
    }
 
    ui->lineEditTruncateTable->clear();
+}
+
+int MainWindow::getImages()
+{
+    QSqlQuery query;
+    QString sql = QString("select receipt from zen_male where mark = 1 union select receipt from zen_female where mark = 1");
+    query.exec(sql);
+
+    int cnt = 0;
+    while(query.next()) {
+        QString receipt = query.value(0).toString();
+        qDebug() << receipt;
+        cnt++;
+    }
+
+    return cnt;
+}
+
+void MainWindow::makePhotos(QString imagePath, QString savePath, int imageWidth, int imageHeight)
+{
+
+    // Get images and test if sync to server
+    QSqlQuery query;
+    QString sql = QString("select receipt from zen_male where mark = 1 union select receipt from zen_female where mark = 1");
+    query.exec(sql);
+    int cnt = 0;
+
+    while(query.next()) {
+        QString receipt = query.value(0).toString();
+        cnt++;
+    }
+
+    QChar separator = QDir::separator();
+
+    QFont font;
+    font.setPointSize(10);
+    QFile pdfFile(savePath + separator + QString("output.pdf"));
+    pdfFile.open(QIODevice::WriteOnly);
+
+    QPdfWriter *pdfWriter = new QPdfWriter(&pdfFile);
+    pdfWriter->setPageMargins(QMarginsF(0, 0, 0, 0));
+    pdfWriter->setPageSize(QPagedPaintDevice::A4);
+
+    QPainter *pdfPainter = new QPainter(pdfWriter);
+    pdfPainter->setFont(font);
+
+    int height = pdfPainter->device()->height();
+    int width = pdfPainter->device()->width();
+
+    QRect rect(0, 0, pdfPainter->device()->width(), pdfPainter->device()->height());
+
+    float hs = height / 7.0;
+    float ws = width / 8.0;
+
+    QPoint points[8][7];
+    for (int i = 0; i < 8; ++i) {
+        for(int j = 0; j < 7; ++j) {
+            points[i][j].setX(i*ws);
+            points[i][j].setY(j*hs);
+        }
+    }
+
+    int imagesCnt;
+    QDir dir(imagePath);
+    if (!dir.exists()) {
+        return;
+    }
+    dir.setFilter(QDir::Files| QDir::NoSymLinks);
+    QStringList filters;
+    filters << QString("*.jpeg") << QString("*.png") << QString("jpg");
+    dir.setNameFilters(filters);
+    imagesCnt = dir.count();
+    if (imagesCnt <= 0) {
+        return;
+    }
+
+    for (int m = 0; m < imagesCnt; m += 56) {
+        pdfPainter->drawRect(rect);
+        for (int j = 1; j < 7; j++) {
+            pdfPainter->drawLine(QPointF(0, j*hs), QPointF(width, j*hs));
+        }
+
+        for(int j = 1; j < 8; j++) {
+            pdfPainter->drawLine(QPointF(j*ws, 0), QPointF(j*ws, height));
+        }
+
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 7; j++) {
+                if (cnt >= imagesCnt) break;
+                QPixmap pixmap(imagePath + separator + dir[cnt]);
+                pdfPainter->drawPixmap(points[i][j].rx(), points[i][j].ry(), imageWidth, imageHeight, pixmap);
+                pdfPainter->drawText(QRect(points[i][j].rx(), points[i][j].ry() + imageHeight, 2000, 300), dir[cnt].section('.', 0, 0));
+                qDebug() << dir[cnt];
+                cnt++;
+            }
+        }
+        if (imagesCnt - cnt > 0) {
+            pdfWriter->newPage();
+        }
+    }
+
+    pdfPainter->end();
+    pdfFile.close();
+
+    delete pdfPainter;
+    delete pdfWriter;
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    qDebug() << getImages();
+    // makePhotos();
 }
